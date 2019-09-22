@@ -17,15 +17,29 @@ class Main(private val wid: Int, private val hei: Int) : JPanel(), Runnable {
     override fun paint(g: Graphics) {
         with(g) {
             drawGrid()
-            if(balls != null) balls.forEach { b: Ball -> drawBall(b) }
-            drawLine(0, 600, 1000, 600)
+            if (balls != null) balls.forEach { b: Ball -> drawBall(b) }
         }
     }
 
-    private fun Graphics.drawBall(drawable: Drawable): Unit {
+    private fun Graphics.drawVector(vector: Vector, ox: Int, oy: Int, clr: Color): Unit {
+        val oldColor = color
+        color = clr
+        val vx = ox + vector.getX().number.toInt()
+        val vy = oy + vector.getY().number.toInt()
+        drawLine(ox, oy, vx, vy)
+        fillOval(vx - 2, vy - 2, 4, 4)
+        color = oldColor
+    }
+
+    private fun Graphics.drawBall(drawable: Drawable) {
         val oldColor = color
         color = drawable.getColor()
-        fillOval(drawable.getX()+300, drawable.getY()+300, drawable.getWidth(), drawable.getHeight())
+        fillOval(
+            drawable.getX() - drawable.getWidth() / 2,
+            drawable.getY() - drawable.getHeight() / 2,
+            drawable.getWidth(),
+            drawable.getHeight()
+        )
         color = oldColor
     }
 
@@ -39,18 +53,17 @@ class Main(private val wid: Int, private val hei: Int) : JPanel(), Runnable {
     }
 
     override fun run() {
-        balls = balls.map {b:Ball->b.update(F_g, dt)}
+        balls.forEach { b: Ball -> b.update(Force(b.position.vector.inverse().copyAngle(Scalar(9.81))), dt) }
         repaint()
     }
 
     override fun getPreferredSize() = Dimension(wid, hei)
 
-    private val F_g = Force(9.81,Math.PI/2)
     private val dt = Time(0.1)
-    private var balls = listOf(Ball(Position(112.0,-Math.PI/6), Mass(1.0)))
+    private var balls = listOf(Ball(Velocity(10.0, 2.0), Position(112.0, Math.PI / 6), Mass(1.0)))
 }
 
 fun main(a: Array<String>) {
     val executor = Executors.newSingleThreadScheduledExecutor()
-    executor.scheduleAtFixedRate(Main(600, 600), 0, 1, TimeUnit.MILLISECONDS)
+    executor.scheduleAtFixedRate(Main(600, 600), 0, 50, TimeUnit.MILLISECONDS)
 }
