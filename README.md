@@ -1,9 +1,8 @@
-Fizyka co z głowy nie umyka
+#Fizyka co z głowy nie umyka
 
 todo:
-tests
-fix angle
-make scalar number private
-create Dimension
-fix forces
-add more balls
+1. more tests
+1. make scalar number private
+1. create Dimension
+1. fix forces
+1. add more balls
