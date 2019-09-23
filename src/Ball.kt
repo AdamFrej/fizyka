@@ -1,21 +1,21 @@
 import maths.*
 import java.awt.Color
 
-class Ball(var v: Velocity, var position: Position, private var m: Mass) : Drawable {
+class Ball(var v: Velocity, var r: Position, var m: Mass) : Drawable {
     var f:Force = Force(0.0,0.0)
 
     fun update(force: Force, t:Time) {
         f = force
         v = v plus ((f over m) times t)
-        position = position plus (v times t)
+        r = r plus (v times t)
     }
 
     override fun getX(): Int {
-        return position.getX()
+        return r.getX()
     }
 
     override fun getY(): Int {
-        return position.getY()
+        return r.getY()
     }
 
     override fun getColor(): Color {

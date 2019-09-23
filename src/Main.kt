@@ -1,10 +1,13 @@
 import maths.*
-import java.awt.*
+import java.awt.Color
 import java.awt.Dimension
-import java.util.concurrent.*
-import javax.swing.*
+import java.awt.Graphics
+import java.util.concurrent.Executors
+import java.util.concurrent.TimeUnit
+import javax.swing.JFrame
+import javax.swing.JPanel
 
-class Main(private val wid: Int, private val hei: Int) : JPanel(), Runnable {
+class Main(private val size: Int) : JPanel(), Runnable {
     init {
         val f = JFrame("Fizyka co umyka")
         f.add(this)
@@ -21,7 +24,7 @@ class Main(private val wid: Int, private val hei: Int) : JPanel(), Runnable {
         }
     }
 
-    private fun Graphics.drawVector(vector: Vector, ox: Int, oy: Int, clr: Color): Unit {
+    private fun Graphics.drawVector(vector: Vector, ox: Int, oy: Int, clr: Color) {
         val oldColor = color
         color = clr
         val vx = ox + vector.getX().number.toInt()
@@ -35,8 +38,8 @@ class Main(private val wid: Int, private val hei: Int) : JPanel(), Runnable {
         val oldColor = color
         color = drawable.getColor()
         fillOval(
-            drawable.getX() - drawable.getWidth() / 2,
-            drawable.getY() - drawable.getHeight() / 2,
+            drawable.getX() + size - drawable.getWidth() / 2,
+            drawable.getY() + size - drawable.getHeight() / 2,
             drawable.getWidth(),
             drawable.getHeight()
         )
@@ -47,17 +50,17 @@ class Main(private val wid: Int, private val hei: Int) : JPanel(), Runnable {
         color = Color.WHITE
         fillRect(0, 0, width, height)
         color = Color.LIGHT_GRAY
-        for (i in 1..30) drawOval(300 - i * 25, 300 - i * 25, i * 50, i * 50)
-        drawLine(300, 0, 300, 1000)
-        drawLine(0, 300, 1000, 300)
+        for (i in 1..20) drawOval(size - i * size / 20, size - i * size / 20, i * size / 10, i * size / 10)
+        drawLine(size, 0, size, size * 2)
+        drawLine(0, size, size * 2, size)
     }
 
     override fun run() {
-        balls.forEach { b: Ball -> b.update(Force(b.position.vector.inverse().copyAngle(Scalar(9.81))), dt) }
+        balls.forEach { b: Ball -> b.update(Force(b.r.vector.inverse().copyAngle(Scalar(9.81))), dt) }
         repaint()
     }
 
-    override fun getPreferredSize() = Dimension(wid, hei)
+    override fun getPreferredSize() = Dimension(size * 2, size * 2)
 
     private val dt = Time(0.1)
     private var balls = listOf(Ball(Velocity(10.0, 2.0), Position(112.0, Math.PI / 6), Mass(1.0)))
@@ -65,5 +68,5 @@ class Main(private val wid: Int, private val hei: Int) : JPanel(), Runnable {
 
 fun main(a: Array<String>) {
     val executor = Executors.newSingleThreadScheduledExecutor()
-    executor.scheduleAtFixedRate(Main(600, 600), 0, 50, TimeUnit.MILLISECONDS)
+    executor.scheduleAtFixedRate(Main(500), 0, 10, TimeUnit.MILLISECONDS)
 }
