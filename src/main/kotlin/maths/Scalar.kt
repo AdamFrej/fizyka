@@ -1,7 +1,7 @@
 package maths
 
-import ch.obermuhlner.math.big.BigDecimalMath.sqrt
 import ch.obermuhlner.math.big.BigDecimalMath.atan
+import ch.obermuhlner.math.big.BigDecimalMath.sqrt
 import java.math.BigDecimal
 import java.math.MathContext
 
@@ -15,6 +15,7 @@ class Scalar : Comparable<Scalar> {
         this.number = number
         this.dimension = dimension
     }
+
     companion object {
         val ZERO = Scalar(BigDecimal.ZERO)
     }
@@ -48,7 +49,7 @@ class Scalar : Comparable<Scalar> {
     }
 
     override fun compareTo(other: Scalar): Int = number.compareTo(other.number)
-    operator fun unaryMinus(): Scalar = Scalar(-number,dimension)
+    operator fun unaryMinus(): Scalar = Scalar(-number, dimension)
     override fun toString(): String {
         return "Scalar(number=$number, dimension=$dimension)"
     }

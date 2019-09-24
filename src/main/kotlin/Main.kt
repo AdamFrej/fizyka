@@ -2,7 +2,6 @@ import maths.*
 import java.awt.Color
 import java.awt.Dimension
 import java.awt.Graphics
-import java.math.MathContext
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
 import javax.swing.JFrame
@@ -66,7 +65,6 @@ class Main(private val size: Int, private val drawVectors: String) : JPanel(), R
 
     override fun getPreferredSize() = Dimension(size * 2, size * 2)
 
-    private val context = MathContext(10)
     private val drawR = drawVectors.contains("r")
     private val drawV = drawVectors.contains("v")
     private val drawF = drawVectors.contains("f")

@@ -1,2 +1,7 @@
 out
 .idea/*
+/.gradle/
+/.idea/
+/build/
+/gradle/
+/out/

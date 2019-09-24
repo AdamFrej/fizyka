@@ -7,7 +7,10 @@ import org.junit.jupiter.api.Test
 
 class VectorTest {
     private fun assertEquals(expected: Scalar, actual: Scalar) =
-        assertTrue((actual minus expected) < Scalar("0.0000000001"), "expected: %s, actual: %s".format(expected, actual))
+        assertTrue(
+            (actual minus expected) < Scalar("0.0000000001"),
+            "expected: %s, actual: %s".format(expected, actual)
+        )
 
     private fun assertEquals(expected: Angle, actual: Angle) =
         assertTrue((actual minus expected) < Angle("0.000000001"), "expected: %s, actual: %s".format(expected, actual))
