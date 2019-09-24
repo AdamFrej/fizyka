@@ -1,81 +1,67 @@
-import ch.obermuhlner.math.big.BigDecimalMath
+import maths.Angle
+import maths.Scalar
 import maths.Vector
 import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
-import java.math.BigDecimal
-import java.math.MathContext
 
 class VectorTest {
-    private val context = MathContext(10)
-    private val lowerContext = MathContext(9)
-    private val pi = BigDecimalMath.pi(context)
+    private fun assertEquals(expected: Scalar, actual: Scalar) =
+        assertTrue((actual minus expected) < Scalar("0.0000000001"), "expected: %s, actual: %s".format(expected, actual))
 
-    private fun piTimes(string: String) = pi.times(BigDecimal(string))
-    private fun piDiv(string: String) = pi.div(BigDecimal(string))
-
-    private fun assertEquals(expected: BigDecimal, actual: BigDecimal) =
-        assertEquals(
-            -1,
-            (actual - expected).compareTo(BigDecimal("0.00000001")),
-            "actual: %s, expected: %s".format(actual, expected)
-        )
+    private fun assertEquals(expected: Angle, actual: Angle) =
+        assertTrue((actual minus expected) < Angle("0.000000001"), "expected: %s, actual: %s".format(expected, actual))
 
     @Test
     fun getXYTest() {
-        assertEquals(BigDecimal("10"), Vector(BigDecimal("10"), BigDecimal.ZERO).getX().number)
-        assertEquals(BigDecimal.ZERO, Vector(BigDecimal("10"), BigDecimal.ZERO).getY().number)
+        assertEquals(10, Vector("10", "0").getX().toInt())
+        assertEquals(0, Vector("10", "0").getY().toInt())
 
-        assertEquals(BigDecimal.ZERO, Vector(BigDecimal("10"), piTimes("0.5")).getX().number)
-        assertEquals(BigDecimal("10"), Vector(BigDecimal("10"), piTimes("0.5")).getY().number)
+        assertEquals(0, Vector("10", Angle.PI.times("0.5")).getX().toInt())
+        assertEquals(10, Vector("10", Angle.PI.times("0.5")).getY().toInt())
 
-        assertEquals(BigDecimal("-10"), Vector(BigDecimal("10"), pi).getX().number)
-        assertEquals(BigDecimal.ZERO, Vector(BigDecimal("10"), pi).getY().number)
+        assertEquals(-10, Vector("10", Angle.PI).getX().toInt())
+        assertEquals(0, Vector("10", Angle.PI).getY().toInt())
 
-        assertEquals(BigDecimal.ZERO, Vector(BigDecimal("10"), piTimes("1.5")).getX().number)
-        assertEquals(BigDecimal("-10"), Vector(BigDecimal("10"), piTimes("1.5")).getY().number)
+        assertEquals(0, Vector("10", Angle.PI.times("1.5")).getX().toInt())
+        assertEquals(-10, Vector("10", Angle.PI.times("1.5")).getY().toInt())
 
-        assertEquals(BigDecimal("10"), Vector(BigDecimal("10"), piTimes("2")).getX().number)
-        assertEquals(BigDecimal.ZERO, Vector(BigDecimal("10"), piTimes("2")).getY().number)
+        assertEquals(10, Vector("10", Angle.PI.times("2")).getX().toInt())
+        assertEquals(0, Vector("10", Angle.PI.times("2")).getY().toInt())
     }
 
     @Test
     fun inverseTest() {
-        assertEquals(pi, Vector(BigDecimal("10"), BigDecimal.ZERO).inverse().angle.number)
-        assertEquals(BigDecimal("10"), Vector(BigDecimal("10"), BigDecimal.ZERO).inverse().value.number)
-        assertEquals(
-            Vector(BigDecimal("9"), BigDecimal.ZERO).getX().number,
-            -Vector(BigDecimal("9"), BigDecimal.ZERO).inverse().getX().number
-        )
-        assertEquals(
-            Vector(BigDecimal("9"), piTimes("0.5")).getY().number,
-            -Vector(BigDecimal("9"), piTimes("0.5")).inverse().getY().number
-        )
-        assertEquals(piTimes("1.5"), Vector(BigDecimal("10"), piTimes("0.5")).inverse().angle.number)
-        assertEquals(BigDecimal.ZERO, Vector(BigDecimal("10"), pi).inverse().angle.number)
-        assertEquals(piTimes("0.5"), Vector(BigDecimal("10"), piTimes("1.5")).inverse().angle.number)
-        assertEquals(pi, Vector(BigDecimal("10"), piTimes("2")).inverse().angle.number)
+        assertEquals(Angle.PI, Vector("10", "0").inverse().angle)
+        assertEquals(Scalar("10"), Vector("10", "0").inverse().value)
+        assertEquals(Vector("9", "0").getX(), -Vector("9", "0").inverse().getX())
+        assertEquals(Vector("9", Angle.PI.times("0.5")).getY(), -Vector("9", Angle.PI.times("0.5")).inverse().getY())
+        assertEquals(Angle.PI.times("1.5"), Vector("10", Angle.PI.times("0.5")).inverse().angle)
+        assertEquals(Angle("0"), Vector("10", Angle.PI).inverse().angle)
+        assertEquals(Angle.PI.times("0.5"), Vector("10", Angle.PI.times("1.5")).inverse().angle)
+        assertEquals(Angle.PI, Vector("10", Angle.PI.times("2")).inverse().angle)
     }
 
     @Test
     fun plusTest() {
-        val vector1 = Vector(BigDecimal("3"), BigDecimal.ZERO)
-        val vector2 = Vector(BigDecimal("4"), piTimes("0.5"))
-        assertEquals((vector2 plus vector1).value.number, (vector1 plus vector2).value.number)
-        assertEquals((vector2 plus vector1).angle.number, (vector1 plus vector2).angle.number)
-        assertEquals(BigDecimal("5"), (vector1 plus vector2).value.number)
-        assertEquals(BigDecimal("5"), (vector2 plus vector1).value.number)
-        val vector3 = Vector(BigDecimal("9"), pi)
-        val vector4 = Vector(BigDecimal("9"), piTimes("1.5"))
-        assertEquals(piTimes("1.25"), (vector3 plus vector4).angle.number)
+        val vector1 = Vector("3", "0")
+        val vector2 = Vector("4", Angle.PI.times("0.5"))
+        assertEquals((vector2 plus vector1).value, (vector1 plus vector2).value)
+        assertEquals((vector2 plus vector1).angle, (vector1 plus vector2).angle)
+        assertEquals(Scalar("5"), (vector1 plus vector2).value)
+        assertEquals(Scalar("5"), (vector2 plus vector1).value)
+        val vector3 = Vector("9", Angle.PI)
+        val vector4 = Vector("9", Angle.PI.times("1.5"))
+        assertEquals(Angle.PI.times("1.25"), (vector3 plus vector4).angle)
     }
 
     @Test
     fun minusTest() {
-        val vector1 = Vector(BigDecimal("7.071067811865475"), BigDecimal.ZERO)
-        val vector2 = Vector(BigDecimal("7.071067811865475"), piTimes("0.75"))
-        assertEquals(piTimes("0.875"), (vector2 minus vector1).angle.number)
-        assertEquals(piTimes("1.875"), (vector1 minus vector2).angle.number)
-        assertEquals(BigDecimal("13.06562965"), (vector1 minus vector2).value.number)
-        assertEquals(BigDecimal("13.06562965"), (vector2 minus vector1).value.number)
+        val vector1 = Vector("7.071067811865475", "0")
+        val vector2 = Vector("7.071067811865475", Angle.PI.times("0.75"))
+        assertEquals(Angle.PI.times("0.875"), (vector2 minus vector1).angle)
+        assertEquals(Angle.PI.times("1.875"), (vector1 minus vector2).angle)
+        assertEquals(Scalar("13.06562965"), (vector1 minus vector2).value)
+        assertEquals(Scalar("13.06562965"), (vector2 minus vector1).value)
     }
 }

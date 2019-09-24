@@ -1,25 +1,23 @@
 package maths
 
-import ch.obermuhlner.math.big.BigDecimalMath
-import ch.obermuhlner.math.big.BigDecimalMath.cos
-import ch.obermuhlner.math.big.BigDecimalMath.sin
-import java.math.BigDecimal
-import java.math.MathContext
-
 class Vector(val value: Scalar, val angle: Angle) {
-    private val context = MathContext(10)
-    private val pi = BigDecimalMath.pi(context)
+    constructor(number: String, angle: String) : this(Scalar(number), Angle(angle))
+    constructor(number: String, angle: Angle) : this(Scalar(number), angle)
 
-    constructor(number: BigDecimal, angle:BigDecimal): this(Scalar(number), Angle(angle))
-    fun getX(rotation: BigDecimal = BigDecimal.ZERO) = value times cos((angle plus Angle(rotation)).number, context)
-    fun getY(rotation: BigDecimal = BigDecimal.ZERO) = value times sin((angle plus Angle(rotation)).number, context)
-    fun inverse() = Vector(value, (angle plus Angle(pi)))
+    fun getX() = value times angle.cos()
+    fun getY() = value times angle.sin()
+    fun inverse() = Vector(value, (angle.inverse()))
+    fun rotate(rotation: Angle) = Vector(value, angle.plus(rotation))
+
     infix fun plus(vector: Vector): Vector {
         val newX = getX() plus vector.getX()
         val newY = getY() plus vector.getY()
-        val newAngle = (newY over newX).atan() + if (newX.number < BigDecimal.ZERO)  pi else BigDecimal.ZERO
+        val newAngle = (newY over newX).atan()
 
-        return Vector(((newX times newX) plus (newY times newY)).sqrt(), Angle(newAngle))
+        return Vector(
+            ((newX times newX) plus (newY times newY)).sqrt(),
+            if (newX < Scalar.ZERO) newAngle.inverse() else newAngle
+        )
     }
 
     infix fun minus(vector: Vector): Vector = plus(vector.inverse())
