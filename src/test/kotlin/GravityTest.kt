@@ -15,6 +15,6 @@ internal class GravityTest {
 
         val gravity = Gravity()
 
-        assertEquals(Force("9.819942050821504707761360425352541408191", "0"), gravity.compute(earth, smallBall))
+        assertEquals(Force("9.81994", "0"), gravity.compute(earth, smallBall))
     }
 }

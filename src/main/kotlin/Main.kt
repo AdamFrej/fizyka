@@ -1,4 +1,5 @@
 import affinePhysics.*
+import affinemaths.Scalar
 import affinemaths.Vector
 import java.awt.Color
 import java.awt.Dimension
@@ -7,6 +8,7 @@ import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
 import javax.swing.JFrame
 import javax.swing.JPanel
+import kotlin.random.Random
 
 class Main(private val size: Int, private val drawVectors: String, private val options: String) : JPanel(), Runnable {
     init {
@@ -72,9 +74,19 @@ class Main(private val size: Int, private val drawVectors: String, private val o
                 }
             }
         }
-        balls.forEach { b: Ball -> println("X: " + b.getX(6) + ", Y: " + b.getY(6)) }
         repaint()
     }
+
+    fun randomEarth(): Ball {
+        return Ball(
+            Velocity(Vector(randomScalar("-2"), randomScalar("-2"))),
+            Position(Vector.Point(randomScalar("6"), randomScalar("6"))),
+            mz,
+            rz
+        )
+    }
+
+    private fun randomScalar(exponent: String) = Scalar(Random.nextInt(-100, 100).toString(), exponent)
 
     override fun getPreferredSize() = Dimension(size * 2, size * 2)
 
@@ -87,16 +99,12 @@ class Main(private val size: Int, private val drawVectors: String, private val o
     private val o = Position("0", "0")
     private val mz = Mass("5972190000000000000000000")
     private val rz = Length("6371008")
-    private val mk = Mass("73476730000000000000000")
-    private val rk = Length("1737000")
     private val earth = Ball(Velocity("0", "0"), Position("0", "0"), mz, rz)
-    private val moon = Ball(Velocity("0", "-1022"), Position("384400000", "0"), mk, rk)
-    private val antimoon = Ball(Velocity("0", "1022"), Position("-384400000", "0"), mk, rk)
-    private val dt = Time("1000")
-    private var balls = listOf(earth, moon, antimoon)
+    private val dt = Time("100")
+    private var balls = (1..100).map { randomEarth() }
 }
 
 fun main(a: Array<String>) {
     val executor = Executors.newSingleThreadScheduledExecutor()
-    executor.scheduleAtFixedRate(Main(500, "vf", ""), 0, 10, TimeUnit.MILLISECONDS)
+    executor.scheduleAtFixedRate(Main(500, "", ""), 0, 10, TimeUnit.MILLISECONDS)
 }

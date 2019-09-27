@@ -1,7 +1,6 @@
 package affinemaths
 
 import ch.obermuhlner.math.big.BigDecimalMath.pi
-import java.math.MathContext
 
 class Vector {
     private val x: Scalar
@@ -9,13 +8,13 @@ class Vector {
 
     constructor(x: String, y: String) : this(Scalar(x), Scalar(y))
     constructor(scalar: Scalar, direction: Vector) {
-        var angle = (direction.y over  direction.x).atan()
-        if (direction.x < Scalar.ZERO) angle = angle plus Scalar(pi(mathContext).toString())
+        var angle = (direction.y over direction.x).atan()
+        if (direction.x < Scalar.ZERO) angle = angle plus Scalar(pi(Scalar.mathContext).toString())
         this.x = scalar times angle.cos()
         this.y = scalar times angle.sin()
     }
 
-    private constructor(x: Scalar, y: Scalar) {
+    constructor(x: Scalar, y: Scalar) {
         this.x = x
         this.y = y
     }
@@ -56,7 +55,7 @@ class Vector {
         private val y: Scalar
 
         constructor(x: String, y: String) : this(Scalar(x), Scalar(y))
-        private constructor(x: Scalar, y: Scalar) {
+        constructor(x: Scalar, y: Scalar) {
             this.x = x
             this.y = y
         }
@@ -95,8 +94,8 @@ class Vector {
             return "Point($x, $y)"
         }
     }
+
     companion object {
-        val ZERO = Vector("0","0")
-        val mathContext = MathContext(40)
+        val ZERO = Vector("0", "0")
     }
 }

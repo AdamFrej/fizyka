@@ -7,7 +7,6 @@ import java.math.MathContext
 class Scalar : Comparable<Scalar> {
     private val value: BigDecimal
     private val exponent: Int
-    private val mathContext = MathContext(40)
 
     private constructor(value: BigDecimal, exponent: Int) {
         this.value = value
@@ -34,6 +33,7 @@ class Scalar : Comparable<Scalar> {
 
     companion object {
         val ZERO = Scalar(BigDecimal.ZERO, 0)
+        val mathContext = MathContext(6)
     }
 
     fun pow(s: String): Scalar = normalize(value.pow(s.toInt()), exponent * s.toInt())
@@ -44,7 +44,8 @@ class Scalar : Comparable<Scalar> {
     infix fun plus(other: Scalar) = Scalar(toBigDecimal().plus(other.toBigDecimal()))
     infix fun minus(other: Scalar) = Scalar(toBigDecimal().minus(other.toBigDecimal()))
     infix fun times(scalar: Scalar): Scalar = normalize(this.value.times(scalar.value), exponent + scalar.exponent)
-    infix fun over(scalar: Scalar): Scalar = normalize(this.value.divide(scalar.value, mathContext), exponent - scalar.exponent)
+    infix fun over(scalar: Scalar): Scalar =
+        normalize(this.value.divide(scalar.value, mathContext), exponent - scalar.exponent)
 
     private fun normalize(value: BigDecimal, exponent: Int): Scalar {
         val numberOfDigits = value.precision() - value.scale()
@@ -75,7 +76,7 @@ class Scalar : Comparable<Scalar> {
 
         other as Scalar
 
-        if(value == BigDecimal.ZERO && other.value == BigDecimal.ZERO) return true
+        if (value == BigDecimal.ZERO && other.value == BigDecimal.ZERO) return true
         if (value != other.value) return false
         if (exponent != other.exponent) return false
 

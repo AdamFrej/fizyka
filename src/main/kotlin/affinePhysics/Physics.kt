@@ -1,7 +1,5 @@
 package affinePhysics
 
-import affinemaths.Scalar
-
 
 infix fun Velocity.times(dt: Time) = Delta<Position>(vector times dt.value)
 infix fun Delta<Position>.over(dt: Time) = Velocity(vector over dt.value)

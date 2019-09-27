@@ -5,7 +5,7 @@ import affinemaths.Vector
 
 class Force(val vector: Vector) {
     constructor(x: String, y: String) : this(Vector(x, y))
-    constructor(value: Scalar, direction: Vector): this(Vector(value, direction))
+    constructor(value: Scalar, direction: Vector) : this(Vector(value, direction))
 
     infix fun plus(f: Force): Force = Force(vector plus f.vector)
     override fun equals(other: Any?): Boolean {

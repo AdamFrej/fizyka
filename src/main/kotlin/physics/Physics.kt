@@ -2,7 +2,8 @@ package physics
 
 infix fun Position.minus(position: Position) = DeltaPosition(vector minus position.vector)
 infix fun Position.plus(deltaPosition: DeltaPosition) = Position(vector plus deltaPosition.vector)
-infix fun DeltaPosition.plus(position: Position) = DeltaPosition(vector plus position.vector)//Err this operation should be the same as above
+infix fun DeltaPosition.plus(position: Position) =
+    DeltaPosition(vector plus position.vector)//Err this operation should be the same as above
 
 infix fun Velocity.minus(velocity: Velocity) = DeltaVelocity(vector minus velocity.vector)
 infix fun Velocity.plus(deltaVelocity: DeltaVelocity) = Velocity(vector plus deltaVelocity.vector)

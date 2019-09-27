@@ -5,7 +5,6 @@ import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 import java.math.BigDecimal
-import java.math.MathContext
 
 internal class ScalarTest {
 
@@ -54,7 +53,7 @@ internal class ScalarTest {
     @Test
     fun over() {
         assertEquals(Scalar("0"), Scalar.ZERO over Scalar("25"))
-        assertEquals( Scalar("34.567") times Scalar("0.25"), Scalar("34.567") over Scalar("4"))
+        assertEquals(Scalar("34.567") times Scalar("0.25"), Scalar("34.567") over Scalar("4"))
         assertEquals(Scalar("0.25"), Scalar("5") over Scalar("20"))
         assertEquals(Scalar("-0.25"), Scalar("5") over Scalar("-20"))
         assertEquals(Scalar("3"), Scalar("-99") over Scalar("-33"))
@@ -66,35 +65,35 @@ internal class ScalarTest {
     fun atan() {
         assertAtanEquals(BigDecimal("7.7"))
         assertAtanEquals(BigDecimal("-7.7"))
-        assertAtanEquals(BigDecimalMath.pi(MathContext(40)))
-        assertAtanEquals(-BigDecimalMath.pi(MathContext(40)))
+        assertAtanEquals(BigDecimalMath.pi(Scalar.mathContext))
+        assertAtanEquals(-BigDecimalMath.pi(Scalar.mathContext))
     }
 
     @Test
     fun cos() {
         assertCosEquals(BigDecimal("7.7"))
         assertCosEquals(BigDecimal("-7.7"))
-        assertCosEquals(BigDecimalMath.pi(MathContext(40)))
-        assertCosEquals(-BigDecimalMath.pi(MathContext(40)))
+        assertCosEquals(BigDecimalMath.pi(Scalar.mathContext))
+        assertCosEquals(-BigDecimalMath.pi(Scalar.mathContext))
     }
 
     @Test
     fun sin() {
         assertSinEquals(BigDecimal("7.7"))
         assertSinEquals(BigDecimal("-7.7"))
-        assertSinEquals(BigDecimalMath.pi(MathContext(40)))
-        assertSinEquals(-BigDecimalMath.pi(MathContext(40)))
+        assertSinEquals(BigDecimalMath.pi(Scalar.mathContext))
+        assertSinEquals(-BigDecimalMath.pi(Scalar.mathContext))
     }
 
     @Test
     fun sqrt() {
         assertSqrtEquals(BigDecimal("7.7"))
-        assertSqrtEquals(BigDecimalMath.pi(MathContext(40)))
+        assertSqrtEquals(BigDecimalMath.pi(Scalar.mathContext))
     }
 
     @Test
     fun getDrawableValue() {
-        assertEquals(5341, Scalar("5.3419", "6").getDrawableValue(3) )
+        assertEquals(5341, Scalar("5.3419", "6").getDrawableValue(3))
     }
 
     @Test
@@ -111,7 +110,7 @@ internal class ScalarTest {
 
     @Test
     fun testEquals() {
-        assertEquals(Scalar("2.5","-6"), Scalar("0.0000025"))
+        assertEquals(Scalar("2.5", "-6"), Scalar("0.0000025"))
         assertEquals(Scalar("2.5", "1"), Scalar("25"))
         assertEquals(Scalar("2.5000", "1"), Scalar("25"))
         assertEquals(Scalar("0.0135"), Scalar("135", "-4"))
@@ -128,25 +127,25 @@ internal class ScalarTest {
 
     private fun assertAtanEquals(expected: BigDecimal) =
         assertEquals(
-            Scalar(BigDecimalMath.atan(expected, MathContext(40)).toString()),
+            Scalar(BigDecimalMath.atan(expected, Scalar.mathContext).toString()),
             Scalar(expected.toString()).atan()
         )
 
     private fun assertCosEquals(expected: BigDecimal) =
         assertEquals(
-            Scalar(BigDecimalMath.cos(expected, MathContext(40)).toString()),
+            Scalar(BigDecimalMath.cos(expected, Scalar.mathContext).toString()),
             Scalar(expected.toString()).cos()
         )
 
     private fun assertSinEquals(expected: BigDecimal) =
         assertEquals(
-            Scalar(BigDecimalMath.cos(expected, MathContext(40)).toString()),
+            Scalar(BigDecimalMath.cos(expected, Scalar.mathContext).toString()),
             Scalar(expected.toString()).cos()
         )
 
     private fun assertSqrtEquals(expected: BigDecimal) =
         assertEquals(
-            Scalar(BigDecimalMath.sqrt(expected, MathContext(40)).toString()),
+            Scalar(BigDecimalMath.sqrt(expected, Scalar.mathContext).toString()),
             Scalar(expected.toString()).sqrt()
         )
 }

@@ -2,8 +2,9 @@ package affinePhysics
 
 import affinemaths.Scalar
 
-class Length(val value: Scalar): Comparable<Length> {
-    constructor(value: String): this(Scalar(value))
+class Length(val value: Scalar) : Comparable<Length> {
+    constructor(value: String) : this(Scalar(value))
+
     fun pow(s: String) = value.pow(s)
     infix fun over(length: Length) = value over length.value
 
