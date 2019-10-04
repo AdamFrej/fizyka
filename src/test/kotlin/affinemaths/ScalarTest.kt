@@ -1,10 +1,12 @@
 package affinemaths
 
-import ch.obermuhlner.math.big.BigDecimalMath
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
-import java.math.BigDecimal
+import kotlin.math.atan
+import kotlin.math.cos
+import kotlin.math.sin
+import kotlin.math.sqrt
 
 internal class ScalarTest {
 
@@ -14,7 +16,7 @@ internal class ScalarTest {
         assertEquals(Scalar("27"), Scalar("3").pow("3"))
         assertEquals(Scalar("121", "8"), Scalar("11", "4").pow("2"))
         assertEquals(Scalar("1"), Scalar("11", "4").pow("0"))
-        assertEquals(Scalar("1.1", "5"), Scalar("11", "4").pow("1"))
+        assertEquals(Scalar("11", "4"), Scalar("11", "4").pow("1"))
     }
 
     @Test
@@ -46,49 +48,49 @@ internal class ScalarTest {
         assertEquals(Scalar("100"), Scalar("5") times Scalar("20"))
         assertEquals(Scalar("-100"), Scalar("5") times Scalar("-20"))
         assertEquals(Scalar("99"), Scalar("-3") times Scalar("-33"))
-        assertEquals(Scalar("1.5", "8"), Scalar("5", "3") times Scalar("3", "4"))
-        assertEquals(Scalar("1.5"), Scalar("5", "3") times Scalar("3", "-4"))
+        assertEquals(Scalar("15", "7"), Scalar("5", "3") times Scalar("3", "4"))
+        assertEquals(Scalar("15", "-1"), Scalar("5", "3") times Scalar("3", "-4"))
     }
 
     @Test
     fun over() {
         assertEquals(Scalar("0"), Scalar.ZERO over Scalar("25"))
-        assertEquals(Scalar("34.567") times Scalar("0.25"), Scalar("34.567") over Scalar("4"))
-        assertEquals(Scalar("0.25"), Scalar("5") over Scalar("20"))
-        assertEquals(Scalar("-0.25"), Scalar("5") over Scalar("-20"))
+        assertEquals(Scalar("34567", "-3") times Scalar("25", "-2"), Scalar("34567", "-3") over Scalar("4"))
+        assertEquals(Scalar("25", "-2"), Scalar("5") over Scalar("20"))
+        assertEquals(Scalar("-25", "-2"), Scalar("5") over Scalar("-20"))
         assertEquals(Scalar("3"), Scalar("-99") over Scalar("-33"))
-        assertEquals(Scalar("2.5", "-1"), Scalar("5", "3") over Scalar("2", "4"))
-        assertEquals(Scalar("1.25", "7"), Scalar("5", "3") over Scalar("4", "-4"))
+        assertEquals(Scalar("25", "-2"), Scalar("5", "3") over Scalar("2", "4"))
+        assertEquals(Scalar("125", "4"), Scalar("5", "3") over Scalar("4", "-4"))
     }
 
     @Test
     fun atan() {
-        assertAtanEquals(BigDecimal("7.7"))
-        assertAtanEquals(BigDecimal("-7.7"))
-        assertAtanEquals(BigDecimalMath.pi(Scalar.mathContext))
-        assertAtanEquals(-BigDecimalMath.pi(Scalar.mathContext))
+        assertAtanEquals(7.7, Scalar("77", "-1"))
+        assertAtanEquals(-7.7, Scalar("-77", "-1"))
+        assertAtanEquals(3.14, Scalar("314", "-2"))
+        assertAtanEquals(-3.14, Scalar("-314", "-2"))
     }
 
     @Test
     fun cos() {
-        assertCosEquals(BigDecimal("7.7"))
-        assertCosEquals(BigDecimal("-7.7"))
-        assertCosEquals(BigDecimalMath.pi(Scalar.mathContext))
-        assertCosEquals(-BigDecimalMath.pi(Scalar.mathContext))
+        assertCosEquals(7.7, Scalar("77", "-1"))
+        assertCosEquals(-7.7, Scalar("-77", "-1"))
+        assertCosEquals(3.14, Scalar("314", "-2"))
+        assertCosEquals(-3.14, Scalar("314", "-2"))
     }
 
     @Test
     fun sin() {
-        assertSinEquals(BigDecimal("7.7"))
-        assertSinEquals(BigDecimal("-7.7"))
-        assertSinEquals(BigDecimalMath.pi(Scalar.mathContext))
-        assertSinEquals(-BigDecimalMath.pi(Scalar.mathContext))
+        assertSinEquals(7.7, Scalar("77", "-1"))
+        assertSinEquals(-7.7, Scalar("-77", "-1"))
+        assertSinEquals(3.14, Scalar("314", "-2"))
+        assertSinEquals(-3.14, Scalar("-314", "-2"))
     }
 
     @Test
     fun sqrt() {
-        assertSqrtEquals(BigDecimal("7.7"))
-        assertSqrtEquals(BigDecimalMath.pi(Scalar.mathContext))
+        assertSqrtEquals(7.7, Scalar("77", "-1"))
+        assertSqrtEquals(3.14, Scalar("314", "-2"))
     }
 
     @Test
@@ -98,20 +100,19 @@ internal class ScalarTest {
 
     @Test
     fun getScale() {
-        assertEquals(1, Scalar("2.5", "1").getScale())
-        assertEquals(2, Scalar("2.5", "2").getScale())
-        assertEquals(-2, Scalar("2.5", "-2").getScale())
-        assertEquals(0, Scalar("2.5").getScale())
+        assertEquals(1, Scalar("25").getScale())
+        assertEquals(2, Scalar("25", "1").getScale())
+        assertEquals(-2, Scalar("25", "-3").getScale())
+        assertEquals(0, Scalar("25","-1").getScale())
         assertEquals(3, Scalar("1234").getScale())
-        assertEquals(1, Scalar("12.34").getScale())
-        assertEquals(-6, Scalar("0.0000025").getScale())
-        assertEquals(-6, Scalar("0.00000025", "1").getScale())
+        assertEquals(1, Scalar("1234","-2").getScale())
+        assertEquals(-6, Scalar("25", "-7").getScale())
     }
 
     @Test
     fun testEquals() {
-        assertEquals(Scalar("2.5", "-6"), Scalar("0.0000025"))
-        assertEquals(Scalar("2.5", "1"), Scalar("25"))
+        assertEquals(Scalar("25", "-5"), Scalar("0.0000025"))
+        assertEquals(Scalar("25", "1"), Scalar("25"))
         assertEquals(Scalar("2.5000", "1"), Scalar("25"))
         assertEquals(Scalar("0.0135"), Scalar("135", "-4"))
         assertEquals(Scalar("0.01350000"), Scalar("135", "-4"))
@@ -119,33 +120,21 @@ internal class ScalarTest {
 
     @Test
     fun compareTo() {
-        assertTrue(Scalar("3.4") < Scalar("25"))
-        assertTrue(Scalar("3.4", "1") > Scalar("25"))
-        assertTrue(Scalar("0.135") > Scalar("135", "-4"))
-        assertTrue(Scalar("0.135") > Scalar("-135", "4"))
+        assertTrue(Scalar("34", "-1") < Scalar("25"))
+        assertTrue(Scalar("34") > Scalar("25"))
+        assertTrue(Scalar("135", "-3") > Scalar("135", "-4"))
+        assertTrue(Scalar("135", "-3") > Scalar("-135", "4"))
     }
 
-    private fun assertAtanEquals(expected: BigDecimal) =
-        assertEquals(
-            Scalar(BigDecimalMath.atan(expected, Scalar.mathContext).toString()),
-            Scalar(expected.toString()).atan()
-        )
+    private fun assertAtanEquals(expected: Double, actual: Scalar) =
+        assertEquals((atan(expected) * 10_000).toInt(), (actual.atan().toDouble() * 10_000).toInt())
 
-    private fun assertCosEquals(expected: BigDecimal) =
-        assertEquals(
-            Scalar(BigDecimalMath.cos(expected, Scalar.mathContext).toString()),
-            Scalar(expected.toString()).cos()
-        )
+    private fun assertCosEquals(expected: Double, actual: Scalar) =
+        assertEquals((cos(expected) * 10_000).toInt(), (actual.cos().toDouble() * 10_000).toInt())
 
-    private fun assertSinEquals(expected: BigDecimal) =
-        assertEquals(
-            Scalar(BigDecimalMath.cos(expected, Scalar.mathContext).toString()),
-            Scalar(expected.toString()).cos()
-        )
+    private fun assertSinEquals(expected: Double, actual: Scalar) =
+        assertEquals((sin(expected) * 10_000).toInt(), (actual.sin().toDouble() * 10_000).toInt())
 
-    private fun assertSqrtEquals(expected: BigDecimal) =
-        assertEquals(
-            Scalar(BigDecimalMath.sqrt(expected, Scalar.mathContext).toString()),
-            Scalar(expected.toString()).sqrt()
-        )
+    private fun assertSqrtEquals(expected: Double, actual: Scalar) =
+        assertEquals((sqrt(expected) * 10_000).toInt(), (actual.sqrt().toDouble() * 10_000).toInt())
 }

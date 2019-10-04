@@ -3,6 +3,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 plugins {
     kotlin("jvm") version "1.3.50"
     application
+    id("me.champeau.gradle.jmh") version "0.4.8"
 }
 
 repositories {
@@ -17,6 +18,11 @@ dependencies {
 
 application {
     mainClassName = "MainKt"
+}
+
+jmh {
+    verbosity = "EXTRA"
+    jvmArgs = listOf("-Djmh.separateClasspathJAR=true")
 }
 
 tasks.test {

@@ -101,7 +101,7 @@ class Main(private val size: Int, private val drawVectors: String, private val o
     private val rz = Length("6371008")
     private val earth = Ball(Velocity("0", "0"), Position("0", "0"), mz, rz)
     private val dt = Time("100")
-    private var balls = (1..100).map { randomEarth() }
+    private var balls = (1..10).map { randomEarth() }
 }
 
 fun main(a: Array<String>) {
