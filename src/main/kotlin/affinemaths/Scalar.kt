@@ -1,6 +1,7 @@
 package affinemaths
 
-import sun.management.snmp.jvminstr.JvmThreadInstanceEntryImpl.ThreadStateMap.Byte1.other
+import affinemaths.NormalizationHelper.Companion.normalize
+import affinemaths.NormalizationHelper.Companion.tenToPow
 import java.math.MathContext
 import kotlin.math.*
 
@@ -8,31 +9,30 @@ class Scalar : Comparable<Scalar> {
     private val value: Long
     private val exponent: Int
 
-    private constructor(value: Long, exponent: Int) {
+    constructor(value: Long, exponent: Int) {
         this.value = value
         this.exponent = exponent
     }
 
     private constructor(value: Long) {
-        val normalized = normalize(value, 0)
-        this.value = normalized.value
-        this.exponent = normalized.exponent
+        this.value = value
+        this.exponent = 0
     }
 
     private constructor(double: Double) {
-        val normalized = normalize(double)
+        val normalized = normalize(double, 0)
         this.value = normalized.value
         this.exponent = normalized.exponent
     }
 
     constructor(value: String, exponent: String) {
-        val normalized = normalizeString(value.toLong(), exponent.toInt())
+        val normalized = normalize(value, exponent)
         this.value = normalized.value
         this.exponent = normalized.exponent
     }
 
     constructor(value: String) {
-        val normalized = normalizeString(value.toLong(), 0)
+        val normalized = normalize(value, "0")
         this.value = normalized.value
         this.exponent = normalized.exponent
     }
@@ -60,102 +60,41 @@ class Scalar : Comparable<Scalar> {
         val relativeExponent = exponent - other.exponent
         if (relativeExponent.absoluteValue > precision)
             return if (relativeExponent > 0) Scalar(value, exponent) else Scalar(other.value, other.exponent)
-        return normalize(value + other.value / tenToPow(relativeExponent.absoluteValue), if(relativeExponent > 0) exponent else other.exponent)
+        return normalize(add(value, other.value, relativeExponent), if(relativeExponent >= 0) exponent else other.exponent)
     }
+
+    private fun add(left: Long, right: Long, relativeExponent: Int): Long {
+        return if(relativeExponent > 0) {
+            (left * tenToPow(precision) + right * tenToPow(precision) / tenToPow(relativeExponent.absoluteValue)) / tenToPow(precision)
+        } else {
+            (right * tenToPow(precision) + left *tenToPow(precision) / tenToPow(relativeExponent.absoluteValue)) /tenToPow(precision)
+        }
+    }
+
     operator fun unaryMinus(): Scalar = Scalar(-value, exponent)
     infix fun minus(other: Scalar) = this plus -other
     infix fun times(scalar: Scalar): Scalar {
         if(this.value == 0L || scalar.value == 0L) return ZERO
-        return normalizeBigger(this.value * scalar.value, exponent + scalar.exponent)
+        return normalize(value * scalar.value, exponent + scalar.exponent+ 1 - precision)
     }
-    infix fun over(scalar: Scalar): Scalar = normalizeSmaller(this.value / scalar.value, exponent - scalar.exponent)
 
-    private fun normalize(value: Long, exponent: Int): Scalar {
-        return if (value.absoluteValue < 1_000_000) {
-            normalizeSmaller(value, exponent)
+    infix fun over(scalar: Scalar): Scalar {
+        return if(this.value.absoluteValue > scalar.value.absoluteValue){
+            normalize(value * 10_000 / scalar.value, exponent - scalar.exponent)
         } else {
-            normalizeBigger(value, exponent)
+            normalize(value * 100_000 / scalar.value, exponent - scalar.exponent - 1)
         }
-    }
-
-    private fun normalizeString(value: Long, exponent: Int): Scalar {
-        return if (value.absoluteValue < 1_000_000) {
-            Scalar(value * tenToPow(precision - numberOfDigits1to5(value)), numberOfDigits1to5(value) + exponent - 1)
-        } else {
-            Scalar(value / tenToPow(precision + numberOfDigits6to10(value)), numberOfDigits1to5(value) + exponent - 1)
-        }
-    }
-
-    private fun normalize(double: Double): Scalar = normalize((double * tenToPow(precision)).toLong(), 1)
-
-    private fun normalizeBigger(value: Long, exponent: Int): Scalar {
-        return if (value.absoluteValue < 1_000_000_000) {
-            if (value.absoluteValue < 100_000_000) {
-                if (value.absoluteValue < 10_000_000) {
-                    Scalar(value / 10, exponent + 5)
-                } else {
-                    Scalar(value / 100, exponent + 4)
-                }
-            } else {
-                Scalar(value / 10_000, exponent)
-            }
-        } else if (value.absoluteValue >= 100_000_000) {
-            Scalar(value / 100_000, exponent + 1)
-        } else {
-            Scalar(value / 10_000, exponent + 2)
-        }
-    }
-
-    private fun normalizeSmaller(value: Long, exponent: Int): Scalar {
-        return if (value.absoluteValue < 1_000) {
-            if (value.absoluteValue < 100) {
-                if (value.absoluteValue < 10) {
-                    Scalar(value * 10_000, exponent - 4)
-                } else {
-                    Scalar(value * 1_000, exponent - 3)
-                }
-            } else {
-                Scalar(value * 100, exponent - 2)
-            }
-        } else if (value.absoluteValue >= 10_000) {
-            Scalar(value, exponent)
-        } else {
-            Scalar(value * 10, exponent - 1)
-        }
-    }
-
-    private fun tenToPow(pow: Int): Int{
-        if(pow.absoluteValue <= 1) return 10
-        if(pow.absoluteValue == 2) return 100
-        if(pow.absoluteValue == 3) return 1_000
-        if(pow.absoluteValue == 4) return 10_000
-        if(pow.absoluteValue >= 5) return 100_000
-        return 0
     }
 
     private fun isBiggerThanPrecision(value: Long): Boolean {
         return value.absoluteValue < 1_000_000
     }
 
-    private fun numberOfDigits1to5(value: Long): Int {
-        return if (value.absoluteValue < 1_000) {
-            if (value.absoluteValue < 100) {
-                if (value.absoluteValue < 10) 1 else 2
-            } else 3
-        } else if (value.absoluteValue >= 10_000) 5 else 4
-    }
-
-    private fun numberOfDigits6to10(value: Long): Int {
-        return if (value.absoluteValue < 1_000_000_000) {
-            if (value.absoluteValue < 1_00_000_000) {
-                if (value.absoluteValue < 10_000_000) 6 else 7
-            } else 8
-        } else if (value.absoluteValue >= 10_000_000_000) 10 else 9
-    }
-
     fun toDouble(): Double {
-        val absoluteExponent = 1 - exponent - precision
-        return if(absoluteExponent > 0 ) value.toDouble() * tenToPow(absoluteExponent - 1) else value.toDouble() / tenToPow(-absoluteExponent)
+        val absoluteExponent = exponent - precision
+        return if (absoluteExponent >= 0) value.toDouble() * tenToPow(absoluteExponent + 1) else value.toDouble() / tenToPow(
+            -absoluteExponent - 1
+        )
     }
 
     fun getDrawableValue(scale: Int): Int {

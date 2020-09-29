@@ -11,6 +11,15 @@ import kotlin.math.sqrt
 internal class ScalarTest {
 
     @Test
+    fun toDouble(){
+        assertEquals(7.7, Scalar("77", "-1").toDouble())
+        assertEquals(0.77, Scalar("77", "-2").toDouble())
+        assertEquals(77.0, Scalar("77").toDouble())
+        assertEquals(770000.0, Scalar("77", "4").toDouble())
+        assertEquals(0.000077, Scalar("77", "-6").toDouble())
+    }
+
+    @Test
     fun pow() {
         assertEquals(Scalar("25"), Scalar("5").pow("2"))
         assertEquals(Scalar("27"), Scalar("3").pow("3"))
@@ -21,6 +30,7 @@ internal class ScalarTest {
 
     @Test
     fun plus() {
+        assertEquals(Scalar("25"), Scalar("20") plus Scalar("5"))
         assertEquals(Scalar("25"), Scalar("5") plus Scalar("20"))
         assertEquals(Scalar("25"), Scalar("25") plus Scalar.ZERO)
         assertEquals(Scalar("25"), Scalar.ZERO plus Scalar("25"))
@@ -38,7 +48,7 @@ internal class ScalarTest {
         assertEquals(Scalar("25"), Scalar("5") minus Scalar("-20"))
         assertEquals(Scalar("77"), Scalar("1", "2") minus Scalar("23"))
         assertEquals(Scalar("7.7"), Scalar("1", "1") minus Scalar("2.3"))
-        assertEquals(Scalar("653.877"), Scalar("6.54", "2") minus Scalar("1.23", "-1"))
+        assertEquals(Scalar("653.87"), Scalar("6.54", "2") minus Scalar("1.23", "-1"))
     }
 
     @Test
@@ -60,7 +70,7 @@ internal class ScalarTest {
         assertEquals(Scalar("-25", "-2"), Scalar("5") over Scalar("-20"))
         assertEquals(Scalar("3"), Scalar("-99") over Scalar("-33"))
         assertEquals(Scalar("25", "-2"), Scalar("5", "3") over Scalar("2", "4"))
-        assertEquals(Scalar("125", "4"), Scalar("5", "3") over Scalar("4", "-4"))
+        assertEquals(Scalar("125", "5"), Scalar("5", "3") over Scalar("4", "-4"))
     }
 
     @Test
@@ -111,8 +121,9 @@ internal class ScalarTest {
 
     @Test
     fun testEquals() {
-        assertEquals(Scalar("25", "-5"), Scalar("0.0000025"))
-        assertEquals(Scalar("25", "1"), Scalar("25"))
+        assertEquals(Scalar("25", "-5"), Scalar("0.00025"))
+        assertEquals(Scalar("25", "1"), Scalar("250"))
+        assertEquals(Scalar("25", "0"), Scalar("25"))
         assertEquals(Scalar("2.5000", "1"), Scalar("25"))
         assertEquals(Scalar("0.0135"), Scalar("135", "-4"))
         assertEquals(Scalar("0.01350000"), Scalar("135", "-4"))
