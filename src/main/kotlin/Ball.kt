@@ -9,16 +9,8 @@ class Ball(var v: Velocity, var p: Position, var m: Mass, var r: Length) {
     }
 
     fun update(t: Time) {
-        v = v plus ((f over m) times t)
-        p = p plus (v times t)
+//        v = v plus ((f over m) times t)
+//        p = p plus (v times t)
         f = Force(Vector.ZERO)
-    }
-
-    fun getX(scale: Int): Int {
-        return p.point.getDrawableX(scale)
-    }
-
-    fun getY(scale: Int): Int {
-        return p.point.getDrawableY(scale)
     }
 }

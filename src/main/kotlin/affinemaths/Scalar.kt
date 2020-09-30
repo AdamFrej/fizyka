@@ -97,6 +97,15 @@ class Scalar : Comparable<Scalar> {
         )
     }
 
+    fun toInt(): Int {
+        val absoluteExponent = exponent - precision
+        val longValue: Long =
+            if (absoluteExponent >= 0) value * tenToPow(absoluteExponent + 1) else value / tenToPow(
+                -absoluteExponent - 1
+            )
+        return longValue.toInt()
+    }
+
     fun getDrawableValue(scale: Int): Int {
         return (if (scale > 0) toDouble() / 10.0.pow(scale) else toDouble() * 10.0.pow(-scale)).toInt()
     }
