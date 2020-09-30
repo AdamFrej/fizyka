@@ -1,7 +1,6 @@
 package affinePhysics
 
 import affinemaths.Vector
-import java.lang.IllegalArgumentException
 
 class Velocity(private val vector: Vector, val position: Position) : VectorValue {
     infix fun minus(velocity: Velocity) = Delta(this, velocity)

@@ -2,7 +2,7 @@ package affinePhysics
 
 import affinemaths.Vector
 
-class Position: VectorValue{
+class Position : VectorValue {
 
     private val vector: Vector
     override fun getVector(): Vector {
@@ -13,9 +13,10 @@ class Position: VectorValue{
         this.vector = vector
     }
 
-    constructor(x:String, y:String){
-        this.vector = Vector(x,y)
+    constructor(x: String, y: String) {
+        this.vector = Vector(x, y)
     }
+
     infix fun minus(position: Position) = Delta(this, position)
     infix fun plus(delta: Delta<Position>): Position = Position(delta.addTo(this.vector))
     infix fun minus(delta: Delta<Position>): Position = Position(delta.removeFrom(this.vector))

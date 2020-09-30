@@ -45,13 +45,14 @@ class Scalar : Comparable<Scalar> {
     }
 
     fun pow(s: String): Scalar {
-        if(s.toInt()==0) return Scalar.ONE
+        if (s.toInt() == 0) return Scalar.ONE
         var ret = Scalar(value, exponent)
-        for (d:Int in 1 until s.toInt()) {
+        for (d: Int in 1 until s.toInt()) {
             ret = ret times this
         }
         return ret
     }
+
     fun atan() = Scalar(atan(toDouble()))
     fun cos() = Scalar(cos(toDouble()))
     fun sin() = Scalar(sin(toDouble()))
@@ -60,26 +61,33 @@ class Scalar : Comparable<Scalar> {
         val relativeExponent = exponent - other.exponent
         if (relativeExponent.absoluteValue > precision)
             return if (relativeExponent > 0) Scalar(value, exponent) else Scalar(other.value, other.exponent)
-        return normalize(add(value, other.value, relativeExponent), if(relativeExponent >= 0) exponent else other.exponent)
+        return normalize(
+            add(value, other.value, relativeExponent),
+            if (relativeExponent >= 0) exponent else other.exponent
+        )
     }
 
     private fun add(left: Long, right: Long, relativeExponent: Int): Long {
-        return if(relativeExponent > 0) {
-            (left * tenToPow(precision) + right * tenToPow(precision) / tenToPow(relativeExponent.absoluteValue)) / tenToPow(precision)
+        return if (relativeExponent > 0) {
+            (left * tenToPow(precision) + right * tenToPow(precision) / tenToPow(relativeExponent.absoluteValue)) / tenToPow(
+                precision
+            )
         } else {
-            (right * tenToPow(precision) + left *tenToPow(precision) / tenToPow(relativeExponent.absoluteValue)) /tenToPow(precision)
+            (right * tenToPow(precision) + left * tenToPow(precision) / tenToPow(relativeExponent.absoluteValue)) / tenToPow(
+                precision
+            )
         }
     }
 
     operator fun unaryMinus(): Scalar = Scalar(-value, exponent)
     infix fun minus(other: Scalar) = this plus -other
     infix fun times(scalar: Scalar): Scalar {
-        if(this.value == 0L || scalar.value == 0L) return ZERO
-        return normalize(value * scalar.value, exponent + scalar.exponent+ 1 - precision)
+        if (this.value == 0L || scalar.value == 0L) return ZERO
+        return normalize(value * scalar.value, exponent + scalar.exponent + 1 - precision)
     }
 
     infix fun over(scalar: Scalar): Scalar {
-        return if(this.value.absoluteValue > scalar.value.absoluteValue){
+        return if (this.value.absoluteValue > scalar.value.absoluteValue) {
             normalize(value * 10_000 / scalar.value, exponent - scalar.exponent)
         } else {
             normalize(value * 100_000 / scalar.value, exponent - scalar.exponent - 1)

@@ -27,6 +27,7 @@ class Vector {
     fun getValue(): Scalar {
         return (x.pow("2") plus y.pow("2")).sqrt()
     }
+
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (javaClass != other?.javaClass) return false

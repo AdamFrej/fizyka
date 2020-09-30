@@ -1,7 +1,9 @@
 package affinePhysics
 
 
-infix fun Velocity.times(dt: Time): Delta<Position> = Delta(position, Position(position.getVector() plus (getVector() over dt.value)))
+infix fun Velocity.times(dt: Time): Delta<Position> =
+    Delta(position, Position(position.getVector() plus (getVector() over dt.value)))
+
 infix fun Delta<Position>.over(dt: Time) = Velocity(getVector() over dt.value, b)
 
 //infix fun Acceleration.times(dt: Time) = Delta<Velocity>(vector times dt.value)
