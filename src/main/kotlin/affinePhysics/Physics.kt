@@ -1,13 +1,28 @@
 package affinePhysics
 
+import affinePhysics.Scalar.Delta as ScalarDelta
+import affinePhysics.Vector.Delta as VectorDelta
 
-infix fun Velocity.times(dt: Time): Delta<Position> =
-    Delta(position, Position(position.getVector() plus (getVector() over dt.value)))
+class Position
+class Velocity
+class Acceleration
+class Force
 
-infix fun Delta<Position>.over(dt: Time) = Velocity(getVector() over dt.value, b)
+class Time
+class Mass
 
-//infix fun Acceleration.times(dt: Time) = Delta<Velocity>(vector times dt.value)
-//infix fun Delta<Velocity>.over(dt: Time) = Delta<Velocity>(vector over dt.value)
+infix fun Vector<Velocity>.times(dt: ScalarDelta<Time>) =
+    VectorDelta<Position>(origin plus vector over dt.scalar, origin)
 
-//infix fun Acceleration.times(m: Mass) = Force(vector times m.value)
-infix fun Force.over(m: Mass) = Acceleration(vector over m.value)
+infix fun VectorDelta<Position>.over(dt: ScalarDelta<Time>) = Vector<Velocity>(vector over dt.scalar, origin)
+
+@JvmName("timesAcceleration")
+infix fun Vector<Acceleration>.times(dt: ScalarDelta<Time>) =
+    VectorDelta<Velocity>(origin plus vector over dt.scalar, origin)
+
+@JvmName("overVelocity")
+infix fun VectorDelta<Velocity>.over(dt: ScalarDelta<Time>) = Vector<Acceleration>(vector over dt.scalar, origin)
+
+
+infix fun Vector<Acceleration>.times(m: ScalarDelta<Mass>) = Vector<Force>(vector times m.scalar, origin)
+infix fun Vector<Force>.over(m: Scalar<Mass>) = Vector<Acceleration>(vector over m.scalar, origin)

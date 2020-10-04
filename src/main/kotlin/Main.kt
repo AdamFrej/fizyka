@@ -1,7 +1,6 @@
-import affinePhysics.Delta
 import affinePhysics.Position
 import affinePhysics.Time
-import affinePhysics.Velocity
+import affinePhysics.over
 import affinemaths.Scalar
 import affinemaths.Vector
 import java.awt.Color
@@ -12,6 +11,8 @@ import java.util.concurrent.TimeUnit
 import javax.swing.JFrame
 import javax.swing.JPanel
 import kotlin.random.Random
+import affinePhysics.Scalar as S
+import affinePhysics.Vector as V
 
 class Main(private val size: Int, private val drawVectors: String, private val options: String) : JPanel(), Runnable {
     init {
@@ -26,11 +27,14 @@ class Main(private val size: Int, private val drawVectors: String, private val o
     override fun paint(g: Graphics) {
         with(g) {
             drawGrid()
-            drawPosition(positionA)
-            drawPosition(positionB)
-            drawPosition(positionC)
-            drawDelta(delta)
-//            drawVelocity(vel)
+//            draw(pos1)
+//            draw(pos2)
+//            draw(delta, Color.RED)
+//            draw(delta2, Color.BLUE)
+            draw(vel)
+            draw(vel2, Color.BLACK)
+            draw(deltaVel, Color.RED)
+            draw(acc, Color.MAGENTA)
         }
     }
 
@@ -41,29 +45,29 @@ class Main(private val size: Int, private val drawVectors: String, private val o
         this.color = oldColor
     }
 
-    private fun Graphics.drawPosition(position: Position) {
-        drawVector(position.getVector(), Color.GREEN)
+    private fun <T> Graphics.draw(vector: V<T>, color: Color = Color.GREEN) {
+        drawVector(vector.vector, color)
     }
 
-    private fun Graphics.drawDelta(delta: Delta<Position>) {
-        drawVectorFrom(delta.a.getVector(), delta.b.getVector(), Color.RED)
+    private fun <T> Graphics.draw(delta: V.Delta<T>, color: Color) {
+        drawVectorFrom(delta.vector, delta.origin, color)
     }
 
-    private fun Graphics.drawVelocity(velocity: Velocity) {
-        drawVectorFrom(
-            velocity.position.getVector() plus velocity.getVector(),
-            velocity.position.getVector(),
-            Color.BLACK
-        )
-    }
+//    private fun Graphics.drawVelocity(velocity: Velocity) {
+//        drawVectorFrom(
+//            velocity.getVector(),
+//            velocity.getOrigin(),
+//            Color.BLACK
+//        )
+//    }
 
     private fun Graphics.drawVector(vector: Vector, color: Color? = Color.BLACK) {
         drawVectorFrom(vector, Vector("0", "0"), color)
     }
 
     private fun Graphics.drawVectorFrom(vector: Vector, origin: Vector, color: Color? = Color.BLACK) {
-        val vx = vector.x.toInt()
-        val vy = vector.y.toInt()
+        val vx = origin.x.toInt() + vector.x.toInt()
+        val vy = origin.y.toInt() + vector.y.toInt()
         drawLine(origin.x.toInt(), origin.y.toInt(), vx, vy, color)
         drawLine(vx - 10, vy, vx, vy, color)
         drawLine(vx, vy - 10, vx, vy, color)
@@ -97,16 +101,16 @@ class Main(private val size: Int, private val drawVectors: String, private val o
 //    private val rz = Length("6371008")
 ////    private val earth = Ball(Velocity("0", "0"), Position("0", "0"), mz, rz)
 //    private val dt = Time("100")
-    private val positionA = Position("100", "-100")
-    private val positionB = Position("120", "-100")
-    private val deltaAB = positionB minus positionA
-    private val timeA = Time("1")
-    private val timeB = Time("2")
-    private val deltaT = timeB minus timeA
-    private val vel = Velocity(Vector("0", "-30"), positionB)
-    private val positionC = Position(positionB.getVector() plus (vel.getVector() over deltaT.value))
-    private val delta = Delta(positionB, positionC)
-
+    private val pos1 = V<Position>(Vector("100", "-100"), Vector.ZERO)
+    private val pos2 = V<Position>(Vector("120", "-50"), Vector.ZERO)
+    private val pos3 = V<Position>(Vector("250", "50"), Vector.ZERO)
+    private val delta = pos2 minus pos1
+    private val delta2 = pos1 minus pos2
+    private val time = S.Delta<Time>(Scalar("1"))
+    private val vel = delta over time
+    private val vel2 = (pos3 minus pos1) over time
+    private val deltaVel = vel minus vel2
+    private val acc = deltaVel over time
 }
 
 fun main(a: Array<String>) {
