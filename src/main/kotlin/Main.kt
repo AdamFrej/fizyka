@@ -27,13 +27,14 @@ class Main(private val size: Int, private val drawVectors: String, private val o
     override fun paint(g: Graphics) {
         with(g) {
             drawGrid()
-//            draw(pos1)
-//            draw(pos2)
-//            draw(delta, Color.RED)
-//            draw(delta2, Color.BLUE)
+            draw(pos1, Color.BLUE)
+            draw(pos2, Color.BLUE)
+            draw(pos3, Color.BLUE)
+            draw(delta, Color.RED)
+            draw(delta2, Color.RED)
             draw(vel)
-            draw(vel2, Color.BLACK)
-            draw(deltaVel, Color.RED)
+            draw(vel2)
+            draw(deltaVel, Color.BLACK)
             draw(acc, Color.MAGENTA)
         }
     }
@@ -46,7 +47,7 @@ class Main(private val size: Int, private val drawVectors: String, private val o
     }
 
     private fun <T> Graphics.draw(vector: V<T>, color: Color = Color.GREEN) {
-        drawVector(vector.vector, color)
+        drawVectorFrom(vector.vector, vector.origin, color)
     }
 
     private fun <T> Graphics.draw(delta: V.Delta<T>, color: Color) {
@@ -105,11 +106,11 @@ class Main(private val size: Int, private val drawVectors: String, private val o
     private val pos2 = V<Position>(Vector("120", "-50"), Vector.ZERO)
     private val pos3 = V<Position>(Vector("250", "50"), Vector.ZERO)
     private val delta = pos2 minus pos1
-    private val delta2 = pos1 minus pos2
-    private val time = S.Delta<Time>(Scalar("1"))
+    private val delta2 = pos3 minus pos2
+    private val time = S.Delta<Time>(Scalar("2"))
     private val vel = delta over time
-    private val vel2 = (pos3 minus pos1) over time
-    private val deltaVel = vel minus vel2
+    private val vel2 = delta2 over time
+    private val deltaVel = vel2 minus vel
     private val acc = deltaVel over time
 }
 

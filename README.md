@@ -1,7 +1,5 @@
 #Fizyka co z głowy nie umyka
 
 todo:
-1. fix acceleration
-1. create Dimension
-1. optimization
-1. crashes
+1. consider that velocity and acceleration are present in specific moment
+1. create some moving simulation
